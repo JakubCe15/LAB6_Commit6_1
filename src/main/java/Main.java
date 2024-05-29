@@ -13,11 +13,14 @@ Poniższe zadania będą się sprowadzały do modyfikacji bazowego kodu. Proces 
 //Niepoprawny wiek – gdy jest mniejszy od 0 lub większy niż 100. Niepoprawna data urodzenia – gdy nie jest zapisana w formacie DD-MM-YYYY, np. 28-02-2023.
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import java.io.IOException;
 
 class WrongStudentName extends Exception { }
 class WrongAge extends Exception { }
+class WrongDateOfBirth extends Exception { }
 
 class Main {
     public static Scanner scan = new Scanner(System.in);
@@ -39,6 +42,9 @@ class Main {
             }
             catch(WrongAge e){
                 System.out.println("Błędny wiek studenta!");
+            }
+            catch(WrongDateOfBirth e){
+                System.out.println("Błędna data urodzenia studenta!");
             }
         }
     }
@@ -69,11 +75,12 @@ class Main {
         if (age < 0 || age > 100)
             throw new WrongAge();
 
-
-        
         scan.nextLine();
         System.out.println("Podaj datę urodzenia DD-MM-YYY");
         var date = scan.nextLine();
+        if (!isValidDate(date))
+            throw new WrongDateOfBirth();
+        
         (new Service()).addStudent(new Student(name, age, date));
     }
 
@@ -81,6 +88,17 @@ class Main {
         var students = (new Service()).getStudents();
         for(Student current : students) {
             System.out.println(current.ToString());
+        }
+    }
+    private static boolean isValidDate(String date){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        sdf.setLenient(false);
+        try{
+            sdf.parse(date);
+            return true;
+        } 
+        catch (ParseException e) {
+            return false;
         }
     }
 
